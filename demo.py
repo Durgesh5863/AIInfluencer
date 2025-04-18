@@ -11,7 +11,7 @@ from googleapiclient.errors import HttpError
 # ========== CONFIGURATION ==========
 
 # Enter your API key here
-API_KEY = "enter ur key"
+API_KEY = ""
 YOUTUBE_API_KEY = ""
 MODEL_NAME = "models/gemini-2.0-flash"
 CSV_FILENAME = os.path.join(os.getcwd(), 'database.csv')  # Save database.csv in the current working directory
@@ -452,44 +452,46 @@ def industry_search_mode():
 
 # Update the main function to include the new industry search option
 def main():
-    """Main function to run the script."""
-    print("\n=== YouTube Sponsorship Data Collection Tool ===\n")
-    print("1. Process a single video")
-    print("2. Process videos from a channel")
-    print("3. Search for sponsored videos by industry")
-    print("4. Exit")
-    
-    choice = input("\nEnter your choice (1-4): ").strip()
-    
-    if choice == '1':
-        # Original single video processing
-        genai.configure(api_key=API_KEY)
-        initialize_csv()
-        yt_url = input("Enter YouTube video link: ").strip()
-        try:
-            video_id = extract_video_id(yt_url)
-            print(f"Video ID: {video_id}")
-            transcript = get_transcript(video_id)
-            if not transcript:
-                print("No transcript available, but saving anyway.")
-            gemini_output = analyze_transcript(transcript)
-            print("\nGemini Output:\n", gemini_output)
-            save_to_csv(yt_url, transcript, gemini_output)
-        except Exception as e:
-            print(f"Error: {e}")
-    
-    elif choice == '2':
-        channel_search_mode()
-    
-    elif choice == '3':
-        industry_search_mode()
-    
-    elif choice == '4':
-        print("Exiting program.")
-        sys.exit(0)
-    
-    else:
-        print("Invalid choice. Please try again.")
+
+    while True:
+        """Main function to run the script."""
+        print("\n=== YouTube Sponsorship Data Collection Tool ===\n")
+        print("1. Process a single video")
+        print("2. Process videos from a channel")
+        print("3. Search for sponsored videos by industry")
+        print("4. Exit")
+        
+        choice = input("\nEnter your choice (1-4): ").strip()
+        
+        if choice == '1':
+            # Original single video processing
+            genai.configure(api_key=API_KEY)
+            initialize_csv()
+            yt_url = input("Enter YouTube video link: ").strip()
+            try:
+                video_id = extract_video_id(yt_url)
+                print(f"Video ID: {video_id}")
+                transcript = get_transcript(video_id)
+                if not transcript:
+                    print("No transcript available, but saving anyway.")
+                gemini_output = analyze_transcript(transcript)
+                print("\nGemini Output:\n", gemini_output)
+                save_to_csv(yt_url, transcript, gemini_output)
+            except Exception as e:
+                print(f"Error: {e}")
+        
+        elif choice == '2':
+            channel_search_mode()
+        
+        elif choice == '3':
+            industry_search_mode()
+        
+        elif choice == '4':
+            print("Exiting program.")
+            sys.exit(0)
+        
+        else:
+            print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
     main()
