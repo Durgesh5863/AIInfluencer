@@ -84,18 +84,27 @@ def get_transcript(video_id):
                 print("Found auto-generated English transcript")
             except:
                 # Fall back to default transcript and translate if needed
-                transcript = transcript_list.find_transcript(
-                    ['en', 'en-US', 'en-GB'])
-                if transcript.language_code != 'en':
-                    print(
-                        f"Translating transcript from {transcript.language_code} to English"
-                    )
-                    transcript = transcript.translate('en')
-                transcript_data = transcript.fetch()
-                print(f"Using translated transcript")
+                try:
+                    transcript = transcript_list.find_transcript(
+                        ['en', 'en-US', 'en-GB'])
+                    if transcript.language_code != 'en':
+                        print(
+                            f"Translating transcript from {transcript.language_code} to English"
+                        )
+                        transcript = transcript.translate('en')
+                    transcript_data = transcript.fetch()
+                    print(f"Using translated transcript")
+                except:
+                    # Last resort: try to get any available transcript
+                    default_transcript = transcript_list.find_manually_created_transcript()
+                    transcript_data = default_transcript.fetch()
+                    print("Using default transcript")
 
-        transcript_text = " ".join([t['text'] for t in transcript_data])
-        return transcript_text
+        # Ensure transcript_data is properly formatted
+        if isinstance(transcript_data, list):
+            transcript_text = " ".join(item.get('text', '') for item in transcript_data)
+            return transcript_text
+        return ""
     except Exception as e:
         print(f"Error getting transcript for video ID {video_id}: {e}")
         # Fall back to original method if the above fails
