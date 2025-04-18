@@ -101,9 +101,13 @@ def get_transcript(video_id):
         # Fall back to original method if the above fails
         try:
             transcript_data = YouTubeTranscriptApi.get_transcript(video_id)
-            transcript_text = " ".join([t['text'] for t in transcript_data])
-            print("Using default transcript")
-            return transcript_text
+            if isinstance(transcript_data, list):
+                transcript_text = " ".join(t.get('text', '') for t in transcript_data)
+                print("Using default transcript")
+                return transcript_text
+            else:
+                print("Unexpected transcript data format")
+                return ""
         except Exception as e:
             print(f"All transcript retrieval methods failed: {e}")
             return ""
